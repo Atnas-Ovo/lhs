@@ -30,10 +30,10 @@ for param_id, param_data in data['option_list'].items():
     # param_max = param_data['max']
     # print(f"参数范围: {param_min} - {param_max}")
 
-print("出现过的 data_type 类型:")
-print(count)
-for data_type in data_type_set:
-    print(data_type)
+# print("出现过的 data_type 类型:")
+# print(count)
+# for data_type in data_type_set:
+#     print(data_type)
 
 
 # 定义样本数量
@@ -41,26 +41,27 @@ sample_size = len(data_range)
 print(sample_size)
 
 # 生成LHS样本
-size = 10   # 组数  1k, 2.5k, 5k
+size = 5000   # 组数  1k, 2.5k, 5k
 samples = lhs(sample_size, samples=size)
+
+# print(len(samples))
+# print(len(samples[0]))
 
 # 特殊值临界点
 special = 0.2
-
-for sample in samples:
-    print(len(sample))
 
 # 根据参数范围进行缩放
 scaled_samples = []
 
 nullErr = "空"
-
+wa
 for i in range(size):
     # for k in range(len(samples[i])):
-    for k in range(len(samples)):
+    print(f"第{i}组数据开始")
+    for k in range(len(samples[i])):
         scaled_sample = []
         for param in data_range:
-            print("id ",param.id)
+            # print("id ",param.id)
             if param.id in ["72", "79", "90", "142", "143", "160", "301", "362", "380","401","408","416"
                             ,"417","421","424","428","429","430","435","436","490","512","522","531","553","565","568","582","638","639"]:
                 scaled_sample.append(nullErr)
@@ -75,7 +76,7 @@ for i in range(size):
                     else:
                         modified = (samples[i][k] - 2 * special)/(1 - 2 * special)
                         flag = False
-                        for j in range(1, len(param.enum_values) - 1):
+                        for j in range(0, len(param.enum_values) - 1):
                             interval_start = j / (len(param.enum_values)-2)
                             interval_end = (j + 1) / (len(param.enum_values)-2)
                             if interval_start <= modified < interval_end:
@@ -83,6 +84,7 @@ for i in range(size):
                                 flag = True
                                 break
                         if not flag:
+                            # print(param.id)
                             scaled_sample.append(nullErr)
                 elif param.id in ["232"]:
                     if samples[i][k] > special:
@@ -93,7 +95,7 @@ for i in range(size):
                         scaled_sample.append(param.enum_values[2])
                 else:
                     flag = False
-                    for j in range(1, len(param.enum_values) + 1):
+                    for j in range(0, len(param.enum_values)):
                         interval_start = j / len(param.enum_values)
                         interval_end = (j + 1) / len(param.enum_values)
                         if interval_start <= samples[i][k] < interval_end:
@@ -101,6 +103,7 @@ for i in range(size):
                             flag = True
                             break
                     if not flag:
+                        # print(param.id)
                         scaled_sample.append(nullErr)
 
             elif param.data_type == "int":
@@ -204,13 +207,13 @@ for i in range(size):
                         scaled_sample.append(param.enum_values[0])
                     else:
                         scaled_sample.append(param.enum_values[1])
-            print("--------------")
-            print(len(scaled_sample))
-            print("--------------")
+            # print("--------------")
+            # print(len(scaled_sample))
+            # print("--------------")
 
     scaled_samples.append(scaled_sample)
 
-# # 打印生成的样本
+# 打印生成的样本
 for sample in scaled_samples:
     print(len(sample))
 
@@ -220,4 +223,4 @@ import pandas as pd
 matched_df = pd.DataFrame(scaled_samples)
 
 # 导出到XLSX文件
-matched_df.to_excel('test.xlsx', index=False)
+matched_df.to_excel('test_5000.xlsx', index=False)
